@@ -1,41 +1,41 @@
 import { getDb, putDb } from './database';
 import { header } from './header';
-import { EditorView } from '@codemirror/view';
-import { basicSetup } from '@codemirror/basic-setup';
-import { javascript } from '@codemirror/lang-javascript'; // Import JavaScript mode
-import { oneDark } from '@codemirror/theme-one-dark';
-
 
 export default class {
   constructor() {
     const localData = localStorage.getItem('content');
 
-    // Create the editor view
-    this.editor = new EditorView({
-      doc: localData || header,
-      extensions: [basicSetup, javascript()],
-      parent: document.querySelector('#main'),
+    // check if CodeMirror is loaded
+    if (typeof CodeMirror === 'undefined') {
+      throw new Error('CodeMirror is not loaded');
+    }
+
+    this.editor = CodeMirror(document.querySelector('#main'), {
+      value: '',
+      mode: 'javascript',
+      theme: 'monokai',
+      lineNumbers: true,
+      lineWrapping: true,
+      autofocus: true,
+      indentUnit: 2,
+      tabSize: 2,
     });
 
-    // When the editor content changes, save to localStorage
-    this.editor.on('update', () => {
-      localStorage.setItem('content', this.editor.state.doc.toString());
-    });
-
-    // Save the content when the editor loses focus
-    this.editor.on('blur', () => {
-      console.log('The editor has lost focus');
-      putDb(localStorage.getItem('content'));
-    });
-
-    // Load initial data from IndexedDB
+    // When the editor is ready, set the value to whatever is stored in indexeddb.
+    // Fall back to localStorage if nothing is stored in indexeddb, and if neither is available, set the value to header.
     getDb().then((data) => {
       console.info('Loaded data from IndexedDB, injecting into editor');
-      if (data) {
-        this.editor.dispatch({
-          changes: { from: 0, to: this.editor.state.doc.length, insert: data },
-        });
-      }
+      this.editor.setValue(data || localData || header);
+    });
+
+    this.editor.on('change', () => {
+      localStorage.setItem('content', this.editor.getValue());
+    });
+
+    // Save the content of the editor when the editor itself loses focus
+    this.editor.on('blur', () => {
+      console.log('The editor has lost focus');
+      putDb(this.editor.getValue());
     });
   }
 }

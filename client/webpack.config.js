@@ -3,9 +3,11 @@ const WebpackPwaManifest = require('webpack-pwa-manifest');
 const path = require('path');
 const { InjectManifest } = require('workbox-webpack-plugin');
 
-module.exports = () => {
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === 'production';
+
   return {
-    mode: 'development',
+    mode: isProduction ? 'production' : 'development',
     entry: {
       main: './src/js/index.js',
       install: './src/js/install.js'
@@ -17,29 +19,34 @@ module.exports = () => {
     plugins: [
       new HtmlWebpackPlugin({
         template: './index.html',
-        title: 'Text Editor'
+        title: 'J.A.T.E'
       }),
+      
       new InjectManifest({
         swSrc: './src-sw.js',
-        swDest: 'service-worker.js'
+        swDest: 'service-worker.js',
+        exclude: [/\.map$/, /asset-manifest\.json$/],
       }),
+
       new WebpackPwaManifest({
-        name: 'Text Editor',
-        short_name: 'TextEditor',
-        description: 'A simple text editor PWA',
-        background_color: '#ffffff',
-        theme_color: '#ffffff',
-        start_url: './',
-        publicPath: './',
+        fingerprints: false,
+        inject: true,
+        name: 'Just Another Text Editor',
+        short_name: 'J.A.T.E',
+        description: 'Takes notes with JavaScript syntax highlighting!',
+        background_color: '#225ca3',
+        theme_color: '#225ca3',
+        start_url: '/',
+        publicPath: '/',
         icons: [
           {
             src: path.resolve('src/images/logo.png'),
             sizes: [96, 128, 192, 256, 384, 512],
-            destination: path.join('assets', 'icons')
-          }
-        ]
-      })
-    ],
+            destination: path.join('assets', 'icons'),
+          },
+        ],
+      }),
+    ].filter(Boolean),
 
     module: {
       rules: [
@@ -54,10 +61,10 @@ module.exports = () => {
             loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env'],
-              plugins: ['@babel/plugin-transform-runtime']
-            }
-          }
-        }
+              plugins: ['@babel/plugin-proposal-object-rest-spread', '@babel/transform-runtime'],
+            },
+          },
+        },
       ],
     },
   };
