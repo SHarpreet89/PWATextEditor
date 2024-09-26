@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "webpack-dev-server --open",
     "build": "webpack --mode production",
-    "start": "http-server ./dist"
+    "start": "webpack --watch"
   },
   "author": "Harpreet Singh",
   "license": "UNLICENSED",
