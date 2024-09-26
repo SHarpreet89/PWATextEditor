@@ -3,8 +3,7 @@
   "scripts": {
     "dev": "webpack-dev-server --open",
     "build": "npm install && webpack --mode production",
-    "start": "node server.js",
-    "serve-static": "http-server ./dist"
+    "start": "http-server ./dist"
   },
   "author": "Harpreet Singh",
   "license": "UNLICENSED",
