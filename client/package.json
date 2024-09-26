@@ -3,9 +3,10 @@
   "scripts": {
     "dev": "webpack-dev-server --open",
     "build": "npm install && webpack --mode production",
-    "start": "http-server ./dist"
+    "start": "node server.js",
+    "serve-static": "http-server ./dist"
   },
-  "author": "2U",
+  "author": "Harpreet Singh",
   "license": "UNLICENSED",
   "devDependencies": {
     "@babel/core": "^7.15.0",

@@ -3,6 +3,7 @@ import Editor from './editor';
 import './database';
 import '../css/style.css';
 
+
 const main = document.querySelector('#main');
 main.innerHTML = '';
 
@@ -21,6 +22,16 @@ const editor = new Editor();
 
 if (typeof editor === 'undefined') {
   loadSpinner();
+}
+
+//Add Hot Module Replacement (HMR) for live code updates
+
+if (module.hot) {
+  module.hot.accept((err) => {
+    if (err) {
+      console.error('Cannot apply HMR update.', err);
+    }
+  });
 }
 
 // Check if service workers are supported
